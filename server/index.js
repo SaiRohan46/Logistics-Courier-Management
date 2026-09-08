@@ -39,13 +39,18 @@ const ensureDbInitialized = async (req, res, next) => {
 
 app.use(ensureDbInitialized);
 
-// API Routes
+// API Routes (Support both /api/ prefix and serverless stripped routes)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/shipments', shipmentRoutes);
+app.use('/shipments', shipmentRoutes);
+
 app.use('/api/stats', statsRoutes);
+app.use('/stats', statsRoutes);
 
 // Health Check API
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), app: 'LogiPulse API Engine' });
 });
 
