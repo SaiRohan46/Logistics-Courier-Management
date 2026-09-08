@@ -31,13 +31,24 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+    let res;
+    try {
+      res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+    } catch (err) {
+      throw new Error('Cannot connect to server. Please run `npm run dev` to start both backend & frontend.');
+    }
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      throw new Error('Backend server is offline or returned an invalid response. Run `npm run dev` in your terminal.');
+    }
+
     if (!res.ok) {
       throw new Error(data.error || 'Failed to login');
     }
@@ -49,13 +60,24 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password, role) => {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role })
-    });
+    let res;
+    try {
+      res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role })
+      });
+    } catch (err) {
+      throw new Error('Cannot connect to server. Please run `npm run dev` to start both backend & frontend.');
+    }
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      throw new Error('Backend server is offline or returned an invalid response. Run `npm run dev` in your terminal.');
+    }
+
     if (!res.ok) {
       throw new Error(data.error || 'Failed to signup');
     }
