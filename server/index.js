@@ -47,11 +47,19 @@ const startServer = async () => {
     await initDb();
     await seedDatabase();
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`===================================================`);
       console.log(`🚀 LogiPulse Fullstack Server running on port ${PORT}`);
       console.log(`📦 REST API Base: http://localhost:${PORT}/api`);
       console.log(`===================================================`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use by another node process or background service.`);
+        console.error(`💡 Run 'npx kill-port ${PORT}' in your terminal to free port ${PORT}, then run 'npm run dev'.`);
+        process.exit(1);
+      }
     });
   } catch (err) {
     console.error('Failed to start server:', err);
