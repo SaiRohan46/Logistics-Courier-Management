@@ -20,6 +20,25 @@ const PORT = process.env.PORT || 5005;
 app.use(cors());
 app.use(express.json());
 
+// Ensure database initialization on server startup / cloud requests
+let dbInitPromise = null;
+const ensureDbInitialized = async (req, res, next) => {
+  if (!dbInitPromise) {
+    dbInitPromise = (async () => {
+      try {
+        await initDb();
+        await seedDatabase();
+      } catch (err) {
+        console.error('Database initialization error:', err);
+      }
+    })();
+  }
+  await dbInitPromise;
+  next();
+};
+
+app.use(ensureDbInitialized);
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/shipments', shipmentRoutes);
@@ -41,8 +60,12 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-// Start Server
-const startServer = async () => {
+// Start Server in standalone mode
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
+
+async function startServer() {
   try {
     await initDb();
     await seedDatabase();
@@ -58,13 +81,11 @@ const startServer = async () => {
       if (err.code === 'EADDRINUSE') {
         console.error(`❌ Port ${PORT} is already in use by another node process or background service.`);
         console.error(`💡 Run 'npx kill-port ${PORT}' in your terminal to free port ${PORT}, then run 'npm run dev'.`);
-        process.exit(1);
       }
     });
   } catch (err) {
     console.error('Failed to start server:', err);
-    process.exit(1);
   }
-};
+}
 
-startServer();
+export default app;

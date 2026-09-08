@@ -39,14 +39,14 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password })
       });
     } catch (err) {
-      throw new Error('Cannot connect to server. Please run `npm run dev` to start both backend & frontend.');
+      throw new Error('Unable to reach the server. Please check your network connection.');
     }
 
     let data;
     try {
       data = await res.json();
     } catch (err) {
-      throw new Error('Backend server is offline or returned an invalid response. Run `npm run dev` in your terminal.');
+      throw new Error('Server returned an invalid response. Please try again.');
     }
 
     if (!res.ok) {
@@ -68,14 +68,14 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ name, email, password, role })
       });
     } catch (err) {
-      throw new Error('Cannot connect to server. Please run `npm run dev` to start both backend & frontend.');
+      throw new Error('Unable to reach the server. Please check your network connection.');
     }
 
     let data;
     try {
       data = await res.json();
     } catch (err) {
-      throw new Error('Backend server is offline or returned an invalid response. Run `npm run dev` in your terminal.');
+      throw new Error('Server returned an invalid response. Please try again.');
     }
 
     if (!res.ok) {

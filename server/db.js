@@ -6,12 +6,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+let dbPath;
+try {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  dbPath = path.join(dataDir, 'logistics.db');
+} catch (err) {
+  dbPath = '/tmp/logistics.db';
 }
 
-const dbPath = path.join(dataDir, 'logistics.db');
 const db = new sqlite3.Database(dbPath);
 
 // Promisified DB helper methods
